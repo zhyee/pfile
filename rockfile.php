@@ -1,10 +1,10 @@
 <?php
 $br = (php_sapi_name() == "cli")? "":"<br>";
 
-if(!extension_loaded('pfile')) {
-	dl('pfile.' . PHP_SHLIB_SUFFIX);
+if(!extension_loaded('rockfile')) {
+	dl('rockfile.' . PHP_SHLIB_SUFFIX);
 }
-$module = 'pfile';
+$module = 'rockfile';
 $functions = get_extension_funcs($module);
 echo "Functions available in the test extension:$br\n";
 foreach($functions as $func) {

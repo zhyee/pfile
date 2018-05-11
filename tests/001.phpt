@@ -1,10 +1,10 @@
 --TEST--
-Check for pfile presence
+Check for rockfile presence
 --SKIPIF--
-<?php if (!extension_loaded("pfile")) print "skip"; ?>
+<?php if (!extension_loaded("rockfile")) print "skip"; ?>
 --FILE--
 <?php 
-echo "pfile extension is available";
+echo "rockfile extension is available";
 /*
 	you can add regression tests for your extension here
 
@@ -18,4 +18,4 @@ echo "pfile extension is available";
 */
 ?>
 --EXPECT--
-pfile extension is available
+rockfile extension is available

@@ -2,7 +2,7 @@
   +----------------------------------------------------------------------+
   | PHP Version 5                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2013 The PHP Group                                |
+  | Copyright (c) 1997-2016 The PHP Group                                |
   +----------------------------------------------------------------------+
   | This source file is subject to version 3.01 of the PHP license,      |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -18,70 +18,75 @@
 
 /* $Id$ */
 
-#ifndef PHP_PFILE_H
-#define PHP_PFILE_H
+#ifndef PHP_ROCKFILE_H
+#define PHP_ROCKFILE_H
 
-extern zend_module_entry pfile_module_entry;
-#define phpext_pfile_ptr &pfile_module_entry
+extern zend_module_entry rockfile_module_entry;
+#define phpext_rockfile_ptr &rockfile_module_entry
+
+#define PHP_ROCKFILE_VERSION "0.1.0" /* Replace with version number for your extension */
 
 #ifdef PHP_WIN32
-#	define PHP_PFILE_API __declspec(dllexport)
+#	define PHP_ROCKFILE_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
-#	define PHP_PFILE_API __attribute__ ((visibility("default")))
+#	define PHP_ROCKFILE_API __attribute__ ((visibility("default")))
 #else
-#	define PHP_PFILE_API
+#	define PHP_ROCKFILE_API
 #endif
 
 #ifdef ZTS
 #include "TSRM.h"
 #endif
 
-typedef struct _pfile_handler {
+typedef struct _rockfile_handler {
     char *handler_name;
     FILE *fp;
-} pfile_handler;
+} rockfile_handler;
 
-static void pfile_regular_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC);
-static void pfile_persistent_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC);
+static void rockfile_regular_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC);
+static void rockfile_persistent_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC);
 
-PHP_MINIT_FUNCTION(pfile);
-PHP_MSHUTDOWN_FUNCTION(pfile);
-PHP_RINIT_FUNCTION(pfile);
-PHP_RSHUTDOWN_FUNCTION(pfile);
-PHP_MINFO_FUNCTION(pfile);
+PHP_MINIT_FUNCTION(rockfile);
+PHP_MSHUTDOWN_FUNCTION(rockfile);
+PHP_RINIT_FUNCTION(rockfile);
+PHP_RSHUTDOWN_FUNCTION(rockfile);
+PHP_MINFO_FUNCTION(rockfile);
 
-PHP_FUNCTION(confirm_pfile_compiled);	/* For testing, remove later. */
-PHP_FUNCTION(pfile_fopen);
-PHP_FUNCTION(pfile_fwrite);
-PHP_FUNCTION(pfile_fclose);
+//PHP_FUNCTION(confirm_rockfile_compiled); /* For testing, remove later. */
+PHP_FUNCTION(rockfile_fopen);
+PHP_FUNCTION(rockfile_fread);
+PHP_FUNCTION(rockfile_fwrite);
+PHP_FUNCTION(rockfile_fclose);
+
+
 
 /* 
   	Declare any global variables you may need between the BEGIN
 	and END macros here:     
 
-ZEND_BEGIN_MODULE_GLOBALS(pfile)
+ZEND_BEGIN_MODULE_GLOBALS(rockfile)
 	long  global_value;
 	char *global_string;
-ZEND_END_MODULE_GLOBALS(pfile)
+ZEND_END_MODULE_GLOBALS(rockfile)
 */
 
 /* In every utility function you add that needs to use variables 
-   in php_pfile_globals, call TSRMLS_FETCH(); after declaring other 
+   in php_rockfile_globals, call TSRMLS_FETCH(); after declaring other 
    variables used by that function, or better yet, pass in TSRMLS_CC
    after the last function argument and declare your utility function
    with TSRMLS_DC after the last declared argument.  Always refer to
-   the globals in your function as PFILE_G(variable).  You are 
+   the globals in your function as ROCKFILE_G(variable).  You are 
    encouraged to rename these macros something shorter, see
    examples in any other php module directory.
 */
 
 #ifdef ZTS
-#define PFILE_G(v) TSRMG(pfile_globals_id, zend_pfile_globals *, v)
+#define ROCKFILE_G(v) TSRMG(rockfile_globals_id, zend_rockfile_globals *, v)
 #else
-#define PFILE_G(v) (pfile_globals.v)
+#define ROCKFILE_G(v) (rockfile_globals.v)
 #endif
 
-#endif	/* PHP_PFILE_H */
+#endif	/* PHP_ROCKFILE_H */
 
 
 /*
