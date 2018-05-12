@@ -30,7 +30,7 @@ rockfile_fclose($fp1);  //关闭文件句柄, $fp2也会被关闭，显示关闭
 ```
 ## 性能测试
 ### 原生PHP
-···php
+```php
 <?php
 var_dump(file_put_contents("test0.txt", "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n", FILE_APPEND));
 var_dump(file_put_contents("test1.txt", "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n", FILE_APPEND));
@@ -54,7 +54,7 @@ Requests per second:    3637.36 [#/sec] (mean)
 Time per request:       27.492 [ms] (mean)
 Time per request:       0.275 [ms] (mean, across all concurrent requests)
 Transfer rate:          863.16 [Kbytes/sec] received
-···
+```
 
 ### rockfile
 ```
@@ -77,7 +77,6 @@ Requests per second:    4580.67 [#/sec] (mean)
 Time per request:       21.831 [ms] (mean)
 Time per request:       0.218 [ms] (mean, across all concurrent requests)
 Transfer rate:          1087.07 [Kbytes/sec] received
-
 ```
 
 
