@@ -64,7 +64,7 @@ PHP_FUNCTION(rockfile_fopen) {
         RETURN_FALSE;
     }
 
-    handler_name_len = spprintf(&handler_name, 0, "rockfile*%s*%s", filepath, mode);
+    handler_name_len = spprintf(&handler_name, 0, ".*?ROCKFILE*%s*%s", filepath, mode);
 
     if (zend_hash_find(&EG(persistent_list), handler_name, handler_name_len + 1, &leptr) == SUCCESS) {
         if (leptr->type == le_rockfile){
@@ -205,7 +205,7 @@ static void php_rockfile_init_globals(zend_rockfile_globals *rockfile_globals)
 /* }}} */
 
 static void rockfile_regular_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC){
-    php_printf("资源释放\n");
+    //php_printf("资源释放\n");
 }
 
 static void rockfile_persistent_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
