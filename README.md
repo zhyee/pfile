@@ -59,11 +59,28 @@ Transfer rate:          863.16 [Kbytes/sec] received
 ### rockfile
 ```php
 <?php
-$fp = rockfile_fopen("test2.txt", "ab");
+$fp0 = rockfile_fopen("test0.txt", "ab");
+$fp1 = rockfile_fopen("test1.txt", "ab");
+$fp2 = rockfile_fopen("test2.txt", "ab");
+$fp3 = rockfile_fopen("test3.txt", "ab");
+$fp4 = rockfile_fopen("test4.txt", "ab");
+$fp5 = rockfile_fopen("test5.txt", "ab");
+$fp6 = rockfile_fopen("test6.txt", "ab");
+$fp7 = rockfile_fopen("test7.txt", "ab");
+$fp8 = rockfile_fopen("test8.txt", "ab");
+$fp9 = rockfile_fopen("test9.txt", "ab");
 
-var_dump(rockfile_fwrite($fp, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp0, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp1, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp2, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp3, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp4, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp5, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp6, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp7, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp8, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+var_dump(rockfile_fwrite($fp9, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
 
-//rockfile_fclose($fp);  //不关闭文件句柄可以被别的请求复用
 
 Concurrency Level:      100
 Time taken for tests:   2.183 seconds
