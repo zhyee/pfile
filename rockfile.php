@@ -1,21 +1,6 @@
 <?php
-$br = (php_sapi_name() == "cli")? "":"<br>";
+$fp = rockfile_fopen("test2.txt", "ab");
 
-if(!extension_loaded('rockfile')) {
-	dl('rockfile.' . PHP_SHLIB_SUFFIX);
-}
-$module = 'rockfile';
-$functions = get_extension_funcs($module);
-echo "Functions available in the test extension:$br\n";
-foreach($functions as $func) {
-    echo $func."$br\n";
-}
-echo "$br\n";
-$function = 'confirm_' . $module . '_compiled';
-if (extension_loaded($module)) {
-	$str = $function($module);
-} else {
-	$str = "Module $module is not compiled into PHP";
-}
-echo "$str\n";
-?>
+var_dump(rockfile_fwrite($fp, "少小离家老大回，乡音无改鬓毛衰。儿童相见不相识，笑问客从何处来。\n"));
+
+rockfile_fclose($fp);
