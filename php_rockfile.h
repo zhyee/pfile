@@ -38,12 +38,6 @@ extern zend_module_entry rockfile_module_entry;
 #include "TSRM.h"
 #endif
 
-typedef struct _rockfile_handler {
-    char *handler_name;
-    FILE *fp;
-} rockfile_handler;
-
-static void rockfile_regular_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC);
 static void rockfile_persistent_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC);
 
 PHP_MINIT_FUNCTION(rockfile);

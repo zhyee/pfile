@@ -68,46 +68,37 @@ PHP_FUNCTION(rockfile_fopen) {
 
     if (zend_hash_find(&EG(persistent_list), handler_name, handler_name_len + 1, &leptr) == SUCCESS) {
         if (leptr->type == le_rockfile){
-            ZEND_REGISTER_RESOURCE(return_value, leptr->ptr, leptr->type);
+            RETVAL_STRING(handler_name, 1);
             efree(handler_name);
             return;
         }
     }
 
-    rockfile_handler *handler;
     FILE *fp;
     zend_rsrc_list_entry le;
-
+    
     fp = fopen(filepath, mode);
-    //php_printf("打开文件\n");
 
     if (fp == NULL) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "unable open file %s in mode %s", filepath, mode);
         RETURN_FALSE;
     }
 
-    handler = pemalloc(sizeof(handler), 1);
-    handler->handler_name = pemalloc(handler_name_len + 1, 1);
-    memcpy(handler->handler_name, handler_name, handler_name_len);
-    handler->handler_name[handler_name_len] = '\0';
-    efree(handler_name);
-
-    handler->fp = fp;
-
     le.type = le_rockfile;
-    le.ptr = handler;
-    le.refcount = 0;
-    ZEND_REGISTER_RESOURCE(return_value, handler, le_rockfile);
-    zend_hash_update(&EG(persistent_list), handler->handler_name, handler_name_len + 1, &le, sizeof(zend_rsrc_list_entry), NULL);
+    le.ptr = fp;
+
+    zend_hash_update(&EG(persistent_list), handler_name, handler_name_len + 1, &le, sizeof(zend_rsrc_list_entry), NULL);
+    RETVAL_STRING(handler_name, 1);
+    efree(handler_name);
 }
 
 //fread
 PHP_FUNCTION(rockfile_fread){
-    zval *file_resource;
-    rockfile_handler *handler;
+    zval *file_handler;
+    zend_rsrc_list_entry *leptr;
     long length;
     size_t readlen;
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &file_resource, &length) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zl", &file_handler, &length) == FAILURE) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "incorrect parameters");
         RETURN_FALSE;
     }
@@ -116,11 +107,25 @@ PHP_FUNCTION(rockfile_fread){
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "length must be bigger than zero");
         RETURN_FALSE;
     }
-    
-    ZEND_FETCH_RESOURCE(handler, rockfile_handler *, &file_resource, -1, ROCKFILE_RESOURCE_NAME, le_rockfile);
 
+    if (Z_TYPE_P(file_handler) != IS_STRING) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "file handler is invalid");
+        RETURN_FALSE;       
+    } 
+
+    if (zend_hash_find(&EG(persistent_list), Z_STRVAL_P(file_handler), Z_STRLEN_P(file_handler) + 1, &leptr) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "file handler is invalid");
+        RETURN_FALSE;
+    }
+
+    if (leptr->type != le_rockfile){
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "file handler is invalid");
+        RETURN_FALSE;
+    }
+    
+    FILE *fp = (FILE *)leptr->ptr;
     char *buf = emalloc((size_t)length);
-    readlen = fread(buf, 1, (size_t)length, handler->fp);
+    readlen = fread(buf, 1, (size_t)length, fp);
     RETVAL_STRINGL(buf, readlen, 1);
     efree(buf);
     return;
@@ -129,44 +134,55 @@ PHP_FUNCTION(rockfile_fread){
 
 // fwrite
 PHP_FUNCTION(rockfile_fwrite){
-    zval *file_resource;
-    rockfile_handler *handler;
+    zval *file_handler;
+    zend_rsrc_list_entry *leptr;
     char *data;
     int datalen;
     long length = 0;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|l", &file_resource, &data, &datalen, &length) == FAILURE){
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zs|l", &file_handler, &data, &datalen, &length) == FAILURE){
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "incorrect parameters");
         RETURN_FALSE;
     }
-
-    ZEND_FETCH_RESOURCE(handler, rockfile_handler *, &file_resource, -1, ROCKFILE_RESOURCE_NAME, le_rockfile);
-
+    
     if (length <= 0 || length > (long)datalen) {
         length = (long)datalen;
     }
 
-    RETURN_LONG(fwrite(data, 1, length, handler->fp));
+    if (Z_TYPE_P(file_handler) != IS_STRING) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "file handler is invalid");
+        RETURN_FALSE;       
+    } 
+
+    if (zend_hash_find(&EG(persistent_list), Z_STRVAL_P(file_handler), Z_STRLEN_P(file_handler) + 1, &leptr) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "file handler is invalid");
+        RETURN_FALSE;
+    }
+
+    if (leptr->type != le_rockfile){
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "file handler is invalid");
+        RETURN_FALSE;
+    }
+ 
+    FILE *fp = (FILE *)leptr->ptr;
+    RETURN_LONG(fwrite(data, 1, length, fp));
 }
 
 // 关闭资源
 PHP_FUNCTION(rockfile_fclose){
-    zval *file_resource;
-    zend_bool full_close = 0;
-    rockfile_handler *handler;
-    zend_rsrc_list_entry *leptr;
+    zval *file_handler;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r|b", &file_resource, &full_close) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &file_handler) == FAILURE) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "incorrect parameters");
         RETURN_FALSE;
     }
-
-    ZEND_FETCH_RESOURCE(handler, rockfile_handler *, &file_resource, -1, ROCKFILE_RESOURCE_NAME, le_rockfile);
-    zend_hash_index_del(&EG(regular_list), Z_RESVAL_P(file_resource));
-
-    if (full_close){
-        zend_hash_del(&EG(persistent_list), handler->handler_name, strlen(handler->handler_name) + 1);
-    }
+    if (Z_TYPE_P(file_handler) != IS_STRING) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "file handler is invalid");
+        RETURN_FALSE;       
+    } 
+ 
+    zend_hash_del(&EG(persistent_list), Z_STRVAL_P(file_handler), Z_STRLEN_P(file_handler) + 1);
+    RETURN_TRUE;
 }
 
 
@@ -204,16 +220,10 @@ static void php_rockfile_init_globals(zend_rockfile_globals *rockfile_globals)
 */
 /* }}} */
 
-static void rockfile_regular_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC){
-    //php_printf("资源释放\n");
-}
-
 static void rockfile_persistent_handler_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
     //php_printf("持久资源释放\n");
-    rockfile_handler *handler = (rockfile_handler *)rsrc->ptr;
-    fclose(handler->fp);
-    pefree(handler->handler_name, 1);
-    pefree(handler, 1);
+    FILE *fp = (FILE *)rsrc->ptr;
+    fclose(fp);
 }
 
 
