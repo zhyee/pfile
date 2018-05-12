@@ -57,7 +57,7 @@ Transfer rate:          863.16 [Kbytes/sec] received
 ```
 
 ### rockfile
-```
+```php
 <?php
 $fp = rockfile_fopen("test2.txt", "ab");
 
